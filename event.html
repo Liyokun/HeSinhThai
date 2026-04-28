@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sự Kiện</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0f;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    overflow: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 30% 60%, rgba(80,50,20,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 70% 30%, rgba(20,30,60,0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Top-left profile button */
+  .profile-btn {
+    position: fixed;
+    top: 22px;
+    left: 22px;
+    z-index: 100;
+    width: 42px;
+    height: 42px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+  }
+  .profile-btn:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(200,170,100,0.5);
+    transform: scale(1.08);
+  }
+  .profile-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: rgba(200,180,140,0.85);
+    fill: none;
+    stroke-width: 1.5;
+  }
+
+  /* Book container */
+  .book-wrap {
+    perspective: 1200px;
+    animation: fadeIn 1.2s ease forwards;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .book {
+    position: relative;
+    width: 340px;
+    height: 480px;
+    transform-style: preserve-3d;
+    transform: rotateY(-6deg) rotateX(2deg);
+    transition: transform 0.6s ease;
+    cursor: default;
+  }
+  .book:hover {
+    transform: rotateY(-2deg) rotateX(1deg);
+  }
+
+  /* Book shadow */
+  .book::after {
+    content: '';
+    position: absolute;
+    bottom: -28px;
+    left: 10%;
+    width: 80%;
+    height: 30px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.6) 0%, transparent 70%);
+    filter: blur(8px);
+  }
+
+  /* Spine */
+  .spine {
+    position: absolute;
+    left: -28px;
+    top: 4px;
+    width: 28px;
+    height: calc(100% - 4px);
+    background: linear-gradient(180deg, #2a1a0a 0%, #1a0f05 40%, #2a1a0a 100%);
+    transform: rotateY(-90deg);
+    transform-origin: right center;
+    border-radius: 3px 0 0 3px;
+    box-shadow: inset -4px 0 8px rgba(0,0,0,0.5);
+  }
+  .spine::after {
+    content: 'SỰ KIỆN';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(180deg);
+    writing-mode: vertical-rl;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: rgba(200,170,100,0.5);
+  }
+
+  /* Book cover - front */
+  .cover {
+    position: absolute;
+    inset: 0;
+    border-radius: 2px 8px 8px 2px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow:
+      4px 0 20px rgba(0,0,0,0.8),
+      inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  .cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.55) saturate(0.9);
+    transition: filter 0.4s ease;
+  }
+  .book:hover .cover-img {
+    filter: brightness(0.65) saturate(1);
+  }
+
+  /* Overlay on image */
+  .cover-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(5,5,15,0.3) 0%,
+      rgba(5,5,15,0.1) 30%,
+      rgba(5,5,15,0.5) 70%,
+      rgba(5,5,15,0.85) 100%
+    );
+  }
+
+  /* Glass notice */
+  .notice {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 82%;
+    text-align: center;
+    padding: 18px 20px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 4px;
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .notice-line {
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(200,170,100,0.7), transparent);
+    margin: 0 auto 12px;
+  }
+  .notice-line.bottom { margin: 12px auto 0; }
+
+  .notice-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: rgba(220,200,170,0.92);
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+  }
+
+  /* Corner ornament */
+  .corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: rgba(200,170,100,0.35);
+    border-style: solid;
+  }
+  .corner-tl { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
+  .corner-tr { top: 12px; right: 12px; border-width: 1px 1px 0 0; }
+  .corner-bl { bottom: 12px; left: 12px; border-width: 0 0 1px 1px; }
+  .corner-br { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
+
+  /* Header text */
+  .book-header {
+    position: absolute;
+    top: 22px;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: rgba(200,170,100,0.6);
+  }
+</style>
+</head>
+<body>
+
+<a class="profile-btn" href="profile.html" title="Hồ sơ">
+  <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+</a>
+
+<div class="book-wrap">
+  <div class="book">
+    <div class="spine"></div>
+    <div class="cover">
+      <img class="cover-img"
+        src="https://raw.githubusercontent.com/Liyokun/HeSinhThai/main/hethong001.jpg"
+        alt="Hệ Sinh Thái"
+        onerror="this.style.background='#1a1025';this.removeAttribute('src')"
+      >
+      <div class="cover-overlay"></div>
+
+      <div class="corner corner-tl"></div>
+      <div class="corner corner-tr"></div>
+      <div class="corner corner-bl"></div>
+      <div class="corner corner-br"></div>
+
+      <div class="book-header">— SỰ KIỆN —</div>
+
+      <div class="notice">
+        <div class="notice-line"></div>
+        <p class="notice-text">Hiện tại chưa diễn ra sự kiện</p>
+        <div class="notice-line bottom"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
